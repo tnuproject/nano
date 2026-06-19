@@ -1,31 +1,21 @@
 PACKAGE := nano
 THIS_MK := $(abspath $(lastword $(MAKEFILE_LIST)))
 REPO_DIR := $(patsubst %/,%,$(dir $(THIS_MK)))
-TNU_ROOT ?= $(abspath $(REPO_DIR)/..)
-ifeq ($(wildcard $(TNU_ROOT)/userspace/linker.ld),)
-TNU_ROOT ?= $(abspath $(REPO_DIR)/../tnu)
-endif
+STAGE_ROOT ?= $(abspath $(REPO_DIR))
 BUILD ?= build
 UPSTREAM := src/upstream
 
 CC ?= gcc
-TNU_ROOT := $(abspath $(TNU_ROOT))
-ifeq ($(wildcard $(TNU_ROOT)/userspace/linker.ld),)
-$(error nano: TNU_ROOT='$(TNU_ROOT)' does not look like a TNU checkout)
-endif
-USER_CRT := $(TNU_ROOT)/$(BUILD)/obj/userspace/libc/src/crt0.o
-USER_LIB := $(TNU_ROOT)/$(BUILD)/user/libtnu.a
+USER_CRT :=
+USER_LIB :=
 
 CFLAGS := -std=gnu11 -O2 -g -Wall \
           -ffreestanding -fno-stack-protector -fno-builtin -fno-pic \
           -m64 -mno-red-zone \
-          -I$(TNU_ROOT)/userspace/libc/include \
-          -I$(TNU_ROOT)/kernel/include \
           -Isrc \
           -Isrc/upstream/src \
           -include src/config.h
-LDFLAGS := -T $(TNU_ROOT)/userspace/linker.ld -nostdlib -static -no-pie \
-           -Wl,-z,max-page-size=0x1000
+LDFLAGS :=
 
 NANO_SRCS := $(UPSTREAM)/src/browser.c \
              $(UPSTREAM)/src/chars.c \
@@ -66,9 +56,9 @@ $(UPSTREAM)/src/nano.c:
 patch: fetch
 	@echo "nano: no additional patch step in standalone repo"
 
-$(BUILD)/$(PACKAGE): $(NANO_OBJS) $(SHIM_OBJ) $(USER_LIB) $(USER_CRT)
+$(BUILD)/$(PACKAGE): $(NANO_OBJS) $(SHIM_OBJ)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(USER_CRT) $(NANO_OBJS) $(SHIM_OBJ) $(USER_LIB) -lgcc
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(NANO_OBJS) $(SHIM_OBJ)
 
 $(BUILD)/obj/%.o: $(UPSTREAM)/src/%.c src/config.h src/tnu_curses.h
 	@mkdir -p $(dir $@)
