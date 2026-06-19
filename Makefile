@@ -1,7 +1,10 @@
 PACKAGE := nano
 THIS_MK := $(abspath $(lastword $(MAKEFILE_LIST)))
 REPO_DIR := $(patsubst %/,%,$(dir $(THIS_MK)))
+TNU_ROOT ?= $(abspath $(REPO_DIR)/..)
+ifeq ($(wildcard $(TNU_ROOT)/userspace/linker.ld),)
 TNU_ROOT ?= $(abspath $(REPO_DIR)/../tnu)
+endif
 BUILD ?= build
 UPSTREAM := src/upstream
 
