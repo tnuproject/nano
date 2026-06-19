@@ -199,8 +199,7 @@ int napms(int ms)
     if (ms <= 0) return OK;
     /* busy-wait — TNU has no usleep from kernel's perspective in user mode
        but posix_stubs.c provides usleep via busy-wait already */
-    extern int usleep(unsigned long);
-    usleep((unsigned long)ms * 1000);
+    usleep((unsigned int)ms * 1000u);
     return OK;
 }
 
