@@ -10,12 +10,12 @@ USER_CRT :=
 USER_LIB :=
 
 CFLAGS := -std=gnu11 -O2 -g -Wall \
-          -ffreestanding -fno-stack-protector -fno-builtin -fno-pic \
+          -ffreestanding -fno-stack-protector -fno-builtin -fno-pic -fno-PIE \
           -m64 -mno-red-zone \
           -Isrc \
           -Isrc/upstream/src \
           -include src/config.h
-LDFLAGS :=
+LDFLAGS := -no-pie
 
 NANO_SRCS := $(UPSTREAM)/src/browser.c \
              $(UPSTREAM)/src/chars.c \
