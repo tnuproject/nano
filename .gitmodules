@@ -1,0 +1,3 @@
+[submodule "src/upstream"]
+	path = src/upstream
+	url = https://github.com/madnight/nano
