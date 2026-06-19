@@ -1,21 +1,27 @@
 PACKAGE := nano
-TNU_ROOT ?= ../tnu
+THIS_MK := $(abspath $(lastword $(MAKEFILE_LIST)))
+REPO_DIR := $(patsubst %/,%,$(dir $(THIS_MK)))
+TNU_ROOT ?= $(abspath $(REPO_DIR)/../tnu)
 BUILD ?= build
 UPSTREAM := src/upstream
 
 CC ?= gcc
-USER_CRT := $(abspath $(TNU_ROOT))/$(BUILD)/obj/userspace/libc/src/crt0.o
-USER_LIB := $(abspath $(TNU_ROOT))/$(BUILD)/user/libtnu.a
+TNU_ROOT := $(abspath $(TNU_ROOT))
+ifeq ($(wildcard $(TNU_ROOT)/userspace/linker.ld),)
+$(error nano: TNU_ROOT='$(TNU_ROOT)' does not look like a TNU checkout)
+endif
+USER_CRT := $(TNU_ROOT)/$(BUILD)/obj/userspace/libc/src/crt0.o
+USER_LIB := $(TNU_ROOT)/$(BUILD)/user/libtnu.a
 
 CFLAGS := -std=gnu11 -O2 -g -Wall \
           -ffreestanding -fno-stack-protector -fno-builtin -fno-pic \
           -m64 -mno-red-zone \
-          -I$(abspath $(TNU_ROOT))/userspace/libc/include \
-          -I$(abspath $(TNU_ROOT))/kernel/include \
+          -I$(TNU_ROOT)/userspace/libc/include \
+          -I$(TNU_ROOT)/kernel/include \
           -Isrc \
           -Isrc/upstream/src \
           -include src/config.h
-LDFLAGS := -T $(abspath $(TNU_ROOT))/userspace/linker.ld -nostdlib -static -no-pie \
+LDFLAGS := -T $(TNU_ROOT)/userspace/linker.ld -nostdlib -static -no-pie \
            -Wl,-z,max-page-size=0x1000
 
 NANO_SRCS := $(UPSTREAM)/src/browser.c \
