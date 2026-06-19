@@ -45,12 +45,15 @@ static inline void do_rcfiles(void) {}
 /* POSIX feature availability */
 #define HAVE_TERMIOS_H  1
 #define HAVE_LIMITS_H   1
+#define HAVE_STDARG_H   1
 #define HAVE_SYS_PARAM_H 0
 #undef  HAVE_LIBMAGIC
 #undef  HAVE_LIBINTL_H
 #undef  HAVE_SET_ESCDELAY
 #undef  HAVE_USE_DEFAULT_COLORS
 #undef  NEED_XOPEN_SOURCE_EXTENDED
+
+#include <stdarg.h>
 
 /* i18n: disable gettext, use identity macro */
 #define _(s)     (s)
